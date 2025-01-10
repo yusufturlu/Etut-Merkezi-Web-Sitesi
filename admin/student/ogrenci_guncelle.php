@@ -1,3 +1,47 @@
+<?php
+// Veritabanı bağlantısı
+include("../../db/baglanti.php");
+session_start();
+
+// Öğrenci numarasını alma
+$ogrenci_numara = $_GET['ogrenciNumara'];
+
+// Öğrenci bilgilerini almak için sorgu
+$sql_get_student_info = "SELECT * FROM ogrenciler WHERE ogrenciNumara = $ogrenci_numara";
+$result_get_student_info = $baglanti->query($sql_get_student_info);
+
+// Eğer öğrenci bulunamazsa
+if ($result_get_student_info->num_rows == 0) {
+    echo "Öğrenci bulunamadı.";
+    exit();
+}
+
+// Öğrenci bilgilerini dizi olarak al
+$ogrenci_info = $result_get_student_info->fetch_assoc();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_update'])) {
+    // Formdan gelen güncel bilgileri al
+    $isim = $_POST['isim'];
+    $soyisim = $_POST['soyisim'];
+    $email = $_POST['email'];
+    $adres = $_POST['adres'];
+    $ogrenciSinif = $_POST['sinif']; 
+    $ogrenciSube = $_POST['sube']; 
+    $ogrenciNumara = $ogrenci_info['ogrenciNumara'];
+
+    // Veritabanında güncelleme işlemi
+    $sql_update_student = "UPDATE ogrenciler SET ogrenciIsim='$isim', ogrenciSoyisim='$soyisim', ogrenciEmail='$email', ogrenciAdres='$adres', ogrenciSinif='$ogrenciSinif', ogrenciSube='$ogrenciSube' WHERE ogrenciNumara=$ogrenciNumara";
+
+    if ($baglanti->query($sql_update_student) === TRUE) {
+        echo "Öğrenci bilgileri güncellendi.";
+        header("Location: ogrenciislemleri.php");
+        exit(); 
+    } else {
+        echo "Güncelleme hatası: " . $baglanti->error;
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -8,51 +52,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
    <style>
     .card.text-bg-success {
-    margin: 0 auto; 
+    margin: 0 auto; /* Centers the card */
 }
    </style>
 </head>
 
-<?php
-include("baglanti.php");
-session_start();
-
-// Tüm öğrencileri listeleyen sorgu
-$sql_all_students = "SELECT * FROM ogrenciler";
-$result_all_students = $baglanti->query($sql_all_students);
-
-// Öğrenci arama işlemi
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_search'])) {
-    // Formdan gelen arama terimini al
-    $search_term = mysqli_real_escape_string($baglanti, $_POST['search']);
-
-    // Veritabanında öğrencileri ara ve sonuçları göster
-    $sql_search = "SELECT * FROM ogrenciler WHERE ogrenciIsim LIKE '%$search_term%' OR ogrenciSoyisim LIKE '%$search_term%'";
-    $result_search = $baglanti->query($sql_search);
-}
-
-// Öğrenci silme işlemi
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_delete'])) {
-    // Formdan gelen öğrenci numarasını al
-    $ogrenci_numara = $_POST['ogrenci_numara'];
-
-    // Veritabanında öğrenciyi sil
-    $sql_delete_student = "DELETE FROM ogrenciler WHERE ogrenciNumara = $ogrenci_numara";
-    if ($baglanti->query($sql_delete_student) === TRUE) {
-        echo "Öğrenci başarıyla silindi.";
-    } else {
-        echo "Silme hatası: " . $baglanti->error;
-    }
-}
-
-
-
-
-?>
-
-  <body>
-   <!-- Navbar -->
-   <nav class="navbar navbar-expand-lg navbar-light bg-light">
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
             <a class="navbar-brand" href="yetkiliAnasayfa.php" style="font-family: 'Arial Black', sans-serif; font-size: 24px; font-weight: bold;">
                 <img src="image/pirilti.png" alt="Pırıltı Logo" style="height: 150px;">
@@ -75,62 +82,68 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_delete'])) {
             </div>
         </div>
     </nav>
-    <div class="container mt-5">
+
+   
+
+<!-- öğrenci bilgilerini güncelleme -->
+<div class="container mt-5">
     <div class="card">
         <div class="card-body">
-            <h5 class="card-title text-center">Öğrenci İşlemleri</h5>
+            <h5 class="card-title text-center">Öğrenci Bilgilerini Güncelle</h5>
             <div class="card mb-3">
                 <div class="card-body">
-                    
-<!-- Öğrenci arama formu -->
-<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" class="mb-3">
-    <div class="input-group">
-        <input type="text" class="form-control" placeholder="Öğrenci Adı veya Soyadı" name="search" aria-label="Öğrenci Adı veya Soyadı">
-        <button class="btn btn-primary" type="submit" name="submit_search">Ara</button>
+                        <form method="post">
+            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+    <h2 class="mt-4">Öğrenci Bilgilerini Güncelle</h2>
+    <div class="form-group">
+        <label for="isim">İsim:</label>
+        <input type="text" class="form-control" id="isim" name="isim" value="<?php echo isset($ogrenci_info["ogrenciIsim"]) ? $ogrenci_info["ogrenciIsim"] : ""; ?>">
     </div>
+    <div class="form-group">
+        <label for="soyisim">Soyisim:</label>
+        <input type="text" class="form-control" id="soyisim" name="soyisim" value="<?php echo isset($ogrenci_info["ogrenciSoyisim"]) ? $ogrenci_info["ogrenciSoyisim"] : ""; ?>">
+    </div>
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" class="form-control" id="email" name="email" value="<?php echo isset($ogrenci_info["ogrenciEmail"]) ? $ogrenci_info["ogrenciEmail"] : ""; ?>">
+    </div>
+    <div class="form-group">
+        <label for="adres">Adres:</label>
+        <input type="text" class="form-control" id="adres" name="adres" value="<?php echo isset($ogrenci_info["ogrenciAdres"]) ? $ogrenci_info["ogrenciAdres"] : ""; ?>">
+    </div>
+    <div class="form-group">
+        <label for="sinif">Sınıf:</label>
+        <select class="form-control" id="sinif" name="sinif">
+            <?php
+            // Sınıf seçeneklerini oluştur
+            for ($i = 9; $i <= 12; $i++) {
+                $selected = ($i == $ogrenci_info['ogrenciSinif']) ? 'selected' : '';
+                echo "<option value='$i' $selected>$i</option>";
+            }
+            ?>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="sube">Şube:</label>
+        <select class="form-control" id="sube" name="sube">
+            <?php
+            // Şube seçeneklerini oluştur
+            $subeHarfler = range('A', 'F');
+            foreach ($subeHarfler as $harf) {
+                $selected = ($harf == $ogrenci_info['ogrenciSube']) ? 'selected' : '';
+                echo "<option value='$harf' $selected>$harf</option>";
+            }
+            ?>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary" name="submit_update">Güncelle</button>
 </form>
-
-<?php if (isset($result_search) && $result_search->num_rows > 0): ?>
-    <h2>Arama Sonuçları</h2>
-    <ul class="list-group">
-        <?php while ($row_student = $result_search->fetch_assoc()): ?>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                    <?php echo $row_student['ogrenciIsim'] . " " . $row_student['ogrenciSoyisim']; ?>
-                </div>
-                <div>
-                    <form method='post'>
-                        <input type='hidden' name='ogrenci_numara' value='<?php echo $row_student['ogrenciNumara']; ?>'>
-                        <button type='submit' class='btn btn-danger btn-sm me-1' name='submit_delete'>Sil</button>
-                        <script>
-                            function redirectToUpdatePage(ogrenciNumara) {
-                                window.location.href = 'ogrenci_guncelle.php?ogrenciNumara=' + ogrenciNumara;
-                            }
-                        </script>
-                        <button type='button' class='btn btn-warning btn-sm' onclick="redirectToUpdatePage('<?php echo $row_student['ogrenciNumara']; ?>')">Güncelle</button>
-                    </form>
-                </div>
-            </li>
-        <?php endwhile; ?>
-    </ul>
-<?php elseif(isset($result_search) && $result_search->num_rows == 0): ?>
-    <p>Arama sonucu bulunamadı.</p>
-<?php endif; ?>
+                    </div>
                 </div>
             </div>
         </div>
-   
-
-
-
-
-    </div>
-</div>
-</div>
-</div>
-</div>
-
-
+    </div> <br><br><br>
+    
 <!-- Footer -->
 <footer class="text-center text-lg-start bg-light text-muted">
     <div class="container p-4">
@@ -181,7 +194,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_delete'])) {
                 </li>
                 <?php
                 } else {
-                    // Veri yoksa veya hata oluştuysa bir hata mesajı gösterme
                     echo "İletişim bilgileri alınamadı.";
                 }
                 ?>
@@ -205,3 +217,4 @@ mysqli_close($baglanti);
 ?>
 </body>
 </html>
+

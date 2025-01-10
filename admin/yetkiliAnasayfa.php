@@ -14,8 +14,19 @@
 </head>
 
 <?php
-include("baglanti.php");
+include("../db/baglanti.php");
+
 session_start();
+
+if (!isset($_SESSION['admin'])) {
+    header('Location: admin-login.php');
+    exit;
+}
+
+
+echo "Hoşgeldiniz ".$_SESSION['admin'];
+
+
 
 //Boş gün ayarlama 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ogretmenID'])) {
@@ -99,7 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["ogrenciIsim"])) {
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
             <a class="navbar-brand" href="yetkiliAnasayfa.php" style="font-family: 'Arial Black', sans-serif; font-size: 24px; font-weight: bold;">
-                <img src="image/pirilti.png" alt="Pırıltı Logo" style="height: 150px;">
+                <img src="../image/pirilti.png" alt="Pırıltı Logo" style="height: 150px;">
             </a>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto">
@@ -107,13 +118,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["ogrenciIsim"])) {
                         <a class="nav-link" href="yetkiliAnasayfa.php">Ana Sayfa</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="ogrenciislemleri.php">Öğrenci İşlemleri</a>
+                        <a class="nav-link" href="student/ogrenciislemleri.php">Öğrenci İşlemleri</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="ogretmenislemleri.php">Öğretmen İşlemleri</a>
+                        <a class="nav-link" href="teacher/ogretmenislemleri.php">Öğretmen İşlemleri</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php">Çıkış Yap</a>
+                        <a class="nav-link" href="data.php">Öğretmenlerimiz</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="cikis.php">Çıkış Yap</a>
                     </li>
                 </ul>
             </div>
@@ -157,7 +171,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["ogrenciIsim"])) {
             <h3 class="text-center mt-5 mb-4">Duyurular</h3>
             <div class="accordion" id="accordionExample">
                 <?php
-                include 'baglanti.php';
+                include '../db/baglanti.php';
 
                 $query = "SELECT * FROM duyurular";
                 $result = mysqli_query($baglanti, $query);

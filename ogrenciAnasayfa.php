@@ -29,7 +29,7 @@
 
 
 <?php
-include("baglanti.php");
+include("db/baglanti.php");
 session_start();
 //Bize Ulaşın formu
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

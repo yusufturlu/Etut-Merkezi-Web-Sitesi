@@ -1,10 +1,9 @@
 <?php
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
 
 $gemail = $_POST['eposta'];
 
-include("baglanti.php");
+include("../db/baglanti.php");
 
 // Veritabanında e-posta adresini ara
 $query = "SELECT * FROM ogrenciler WHERE ogrenciemail='$gemail'";

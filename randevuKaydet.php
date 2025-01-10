@@ -1,5 +1,5 @@
 <?php
-include("baglanti.php");
+include("db/baglanti.php");
 
 session_start(); // Oturumu başlat
 

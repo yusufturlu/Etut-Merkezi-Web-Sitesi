@@ -1,8 +1,11 @@
 <?php
 // Veritabanı bağlantısı
-include("baglanti.php");
+include("../../db/baglanti.php");
 session_start();
-
+if (!isset($_SESSION['admin'])) {
+    header('Location: admin-login.php');
+    exit;
+}
 // Öğretmen numarasını alma
 $ogretmen_numara = $_GET['ogretmenNumara'];
 
@@ -76,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_update'])) {
                         <a class="nav-link" href="ogretmenislemleri.php">Öğretmen İşlemleri</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php">Çıkış Yap</a>
+                        <a class="nav-link" href="../cikis.php">Çıkış Yap</a>
                     </li>
                 </ul>
             </div>

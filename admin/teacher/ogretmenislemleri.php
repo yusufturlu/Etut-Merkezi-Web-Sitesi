@@ -14,8 +14,12 @@
 </head>
 
 <?php
-include("baglanti.php");
+include("../../db/baglanti.php");
 session_start();
+if (!isset($_SESSION['admin'])) {
+    header('Location: admin-login.php');
+    exit;
+}
 // Boş gün ayarlama
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['ogretmenID'])) {
     $ogretmenID = mysqli_real_escape_string($baglanti, $_POST['ogretmenID']);

@@ -1,4 +1,4 @@
-<?php include("baglanti.php"); ?>
+<?php include("../db/baglanti.php"); ?>
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -10,110 +10,110 @@
    
 </head>
 
+
 <?php
-include("baglanti.php"); // Veritabanı bağlantısını içeren dosyayı dahil eder
-session_start(); // Oturumları başlatır, böylece oturum verileri kullanılabilir
+include("../db/baglanti.php");
+session_start();
 
 // Yetkili Giriş İşlemleri
-if(isset($_POST['yetkiliID'], $_POST['yetkiliSifre'])) { // Eğer yetkili ID ve şifre POST ile gönderildiyse
-    $yetkiliID = $_POST['yetkiliID']; // Yetkili ID'sini değişkene atar
-    $yetkiliSifre = $_POST['yetkiliSifre']; // Yetkili şifresini değişkene atar
+if(isset($_POST['yetkiliID'], $_POST['yetkiliSifre'])) {
+    $yetkiliID = $_POST['yetkiliID'];
+    $yetkiliSifre = $_POST['yetkiliSifre'];
     
-    $stmt = $baglanti->prepare("SELECT * FROM yetkili WHERE yetkiliID = ? AND yetkiliSifre = ?"); // Yetkili tablosundan ID ve şifreye göre kayıt arayan sorguyu hazırlar
-    $stmt->bind_param("ss", $yetkiliID, $yetkiliSifre); // Sorgu parametrelerini bağlar
-    $stmt->execute(); // Sorguyu çalıştırır
-    $result = $stmt->get_result(); // Sonuçları alır
+    $stmt = $baglanti->prepare("SELECT * FROM yetkili WHERE yetkiliID = ? AND yetkiliSifre = ?");
+    $stmt->bind_param("ss", $yetkiliID, $yetkiliSifre);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    if($result->num_rows > 0) { // Eğer sonuç varsa (yetkili doğru giriş yapmışsa)
-        $_SESSION['loggedin'] = true; // Oturumu açık olarak işaretler
-        $_SESSION['yetkiliID'] = $yetkiliID; // Yetkili ID'sini oturum değişkenine atar
-        header("Location: yetkiliAnasayfa.php"); // Yetkili anasayfasına yönlendirir
-        exit; // İşlemi sonlandırır
+    if($result->num_rows > 0) {
+        $_SESSION['loggedin'] = true;
+        $_SESSION['yetkiliID'] = $yetkiliID;
+        header("Location: yetkiliAnasayfa.php");
+        exit;
     } else {
-        $error_message = 'Geçersiz yetkili ID veya şifre.'; // Hata mesajı ayarlar
+        $error_message = 'Geçersiz yetkili ID veya şifre.';
     }
 }
-
 // Öğrenci Giriş İşlemleri
-if(isset($_POST['ogrenciNumara'], $_POST['ogrenciSifre'])) { 
-    $ogrenciNumara = $_POST['ogrenciNumara']; 
-    $ogrenciSifre = $_POST['ogrenciSifre']; 
+if(isset($_POST['ogrenciNumara'], $_POST['ogrenciSifre'])) {
+    $ogrenciNumara = $_POST['ogrenciNumara'];
+    $ogrenciSifre = $_POST['ogrenciSifre'];
 
-    $stmt = $baglanti->prepare("SELECT * FROM ogrenciler WHERE ogrenciNumara = ? AND ogrenciSifre = ?"); // Öğrenciler tablosundan numara ve şifreye göre kayıt arayan sorguyu hazırlar
-    $stmt->bind_param("ss", $ogrenciNumara, $ogrenciSifre); 
-    $stmt->execute(); 
-    $result = $stmt->get_result(); 
+    $stmt = $baglanti->prepare("SELECT * FROM ogrenciler WHERE ogrenciNumara = ? AND ogrenciSifre = ?");
+    $stmt->bind_param("ss", $ogrenciNumara, $ogrenciSifre);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    if($result->num_rows > 0) { 
-        $row = $result->fetch_assoc(); 
-        $_SESSION['loggedin'] = true; 
-        $_SESSION['ogrenciID'] = $row['ogrenciID']; 
-        $_SESSION['ogrenciNumara'] = $ogrenciNumara; 
-        header("Location: ogrenciAnasayfa.php"); 
-        exit; 
+    if($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $_SESSION['loggedin'] = true;
+        $_SESSION['ogrenciID'] = $row['ogrenciID'];
+        $_SESSION['ogrenciNumara'] = $ogrenciNumara;
+        header("Location: ogrenciAnasayfa.php");
+        exit;
     } else {
-        $error_message = 'Geçersiz öğrenci numarası veya şifre.'; 
+        $error_message = 'Geçersiz öğrenci numarası veya şifre.';
     }
 }
-
 // Öğretmen Giriş İşlemleri
-if(isset($_POST['ogretmenNumara'], $_POST['ogretmenSifre'])) { // Eğer öğretmen numarası ve şifre POST ile gönderildiyse
-    $ogretmenNumara = $_POST['ogretmenNumara']; // Öğretmen numarasını değişkene atar
-    $ogretmenSifre = $_POST['ogretmenSifre']; // Öğretmen şifresini değişkene atar
+if(isset($_POST['ogretmenNumara'], $_POST['ogretmenSifre'])) {
+    $ogretmenNumara = $_POST['ogretmenNumara'];
+    $ogretmenSifre = $_POST['ogretmenSifre'];
 
-    $stmt = $baglanti->prepare("SELECT * FROM ogretmenler WHERE ogretmenNumara = ? AND ogretmenSifre = ?"); // Öğretmenler tablosundan numara ve şifreye göre kayıt arayan sorguyu hazırlar
-    $stmt->bind_param("ss", $ogretmenNumara, $ogretmenSifre); // Sorgu parametrelerini bağlar
-    $stmt->execute(); // Sorguyu çalıştırır
-    $result = $stmt->get_result(); // Sonuçları alır
+    $stmt = $baglanti->prepare("SELECT * FROM ogretmenler WHERE ogretmenNumara = ? AND ogretmenSifre = ?");
+    $stmt->bind_param("ss", $ogretmenNumara, $ogretmenSifre);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    if($result->num_rows > 0) { 
+    if($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        $_SESSION['loggedin'] = true; 
-        $_SESSION['ogretmenID'] = $row['ogretmenID']; 
+        $_SESSION['loggedin'] = true;
+        $_SESSION['ogretmenID'] = $row['ogretmenID'];
         $_SESSION['ogretmenNumara'] = $ogretmenNumara;
-        header("Location: ogretmenAnasayfa.php"); 
-        exit; // İşlemi sonlandırır
+        header("Location: ogretmenAnasayfa.php");
+        exit;
     } else {
         $error_message = 'Geçersiz öğretmen numarası veya şifre.';
     }
 }
 
-// Bize Ulaşın formu
-if ($_SERVER["REQUEST_METHOD"] == "POST") { 
-    
-    if (isset($_POST['ulasanEmail']) && isset($_POST['ulasanMesaj'])) { // Eğer e-posta ve mesaj POST ile gönderildiyse
-        $email = mysqli_real_escape_string($baglanti, $_POST['ulasanEmail']); 
-        $mesaj = mysqli_real_escape_string($baglanti, $_POST['ulasanMesaj']); 
+//Bize Ulaşın formu
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+   
+    if (isset($_POST['ulasanEmail']) && isset($_POST['ulasanMesaj'])) {
+        $email = mysqli_real_escape_string($baglanti, $_POST['ulasanEmail']);
+        $mesaj = mysqli_real_escape_string($baglanti, $_POST['ulasanMesaj']);
 
         // Veritabanına ekleme sorgusu
-        $ekleme_sorgusu = "INSERT INTO bize_ulaşın (ulasanEmail, ulasanMesaj) VALUES ('$email', '$mesaj')"; // Veritabanına kayıt ekleyen sorguyu oluşturur
+        $ekleme_sorgusu = "INSERT INTO bize_ulaşın (ulasanEmail, ulasanMesaj) VALUES ('$email', '$mesaj')";
 
         // Sorguyu çalıştır
         if (mysqli_query($baglanti, $ekleme_sorgusu)) {
-            echo '<script>alert("Mesajınız başarıyla gönderildi.");</script>'; 
+            
+            echo '<script>alert("Mesajınız başarıyla gönderildi.");</script>';
         } else {
-           
-            echo '<script>alert("Hata: ' . mysqli_error($baglanti) . '");</script>'; 
+            
+            echo '<script>alert("Hata: ' . mysqli_error($baglanti) . '");</script>';
         }
     } else {
-       
-        echo '<script>alert("Eksik veya hatalı veri girişi.");</script>'; 
+        
+        echo '<script>alert("Eksik veya hatalı veri girişi.");</script>';
     }
 }
 
-?>
 
+?>
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
             <a class="navbar-brand" href="index.php" style="font-family: 'Arial Black', sans-serif; font-size: 24px; font-weight: bold;">
-                <img src="image/pirilti.png" alt="Pırıltı Logo" style="height: 150px;">
+                <img src="../image/pirilti.png" alt="Pırıltı Logo" style="height: 150px;">
             </a>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php">Ana Sayfa</a>
+                        <a class="nav-link" href="../index.php">Ana Sayfa</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="hakkimizda.php">Hakkımızda</a>
@@ -139,74 +139,71 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div>
     </nav>
-
-   
     <?php
-// Veritabanından hakkımızda verilerini çekme
-$sql = "SELECT * FROM hakkimizda_card";
+include("../db/baglanti.php");
+
+// Veritabanından hizmetler verilerini çekme
+$sql = "SELECT * FROM hizmetler_card";
 $result = mysqli_query($baglanti, $sql);
 
 if (mysqli_num_rows($result) > 0) {
     while($row = mysqli_fetch_assoc($result)) {
-        // Tarihçe kısmı
-        $tarihce_foto = $row["tarihce_foto"];
-        $tarihce_aciklama = $row["tarihce_aciklama"];
+        // 9. Sınıf hizmeti
+        $dokuz_card_foto = $row["dokuz_card_foto"];
+        $dokuz_card_aciklama = $row["dokuz_card_aciklama"];
 
-        // Misyon kısmı
-        $h_misyon_foto = $row["h_misyon_foto"];
-        $h_misyon_aciklama = $row["h_misyon_aciklama"];
+        // 10. Sınıf hizmeti
+        $on_card_foto = $row["on_card_foto"];
+        $on_card_aciklama = $row["on_card_aciklama"];
 
-        // Vizyon kısmı
-        $h_vizyon_foto = $row["h_vizyon_foto"];
-        $h_vizyon_aciklama = $row["h_vizyon_aciklama"];
+        // 11. Sınıf hizmeti
+        $onbir_card_foto = $row["onbir_card_foto"];
+        $onbir_card_aciklama = $row["onbir_card_aciklama"];
 
-        // Hedef kısmı
-        $h_hedef_foto = $row["h_hedef_foto"];
-        $h_hedef_aciklama = $row["h_hedef_aciklama"];
+        // 12. Sınıf hizmeti
+        $oniki_card_foto = $row["oniki_card_foto"];
+        $oniki_card_aciklama = $row["oniki_card_aciklama"];
 
         // HTML çıktısı
-        echo '<!-- Tarihçe -->
-            <div class="container mt-5">
-                <h2 class="text-center mb-5">Tarihçe</h2>
-                <div class="row">
-                    <div class="col-lg-3" ">
-                        <img src="data:image/jpeg;base64,'.base64_encode($tarihce_foto).'" alt="Tarihçe Resmi" class="img-fluid" >
-                    </div>
-                    <div class="col-lg-9">
-                        <p>'.$tarihce_aciklama.'</p>
+        echo '<!-- Hizmetler -->
+            <div class="row row-cols-1 row-cols-md-2 g-4" style="display:flex; flex-direction:row; margin:50px 150px;">
+                <!-- 9. Sınıf -->
+                <div class="col">
+                    <div class="card h-100">
+                        <img src="data:image/jpeg;base64,'.base64_encode($dokuz_card_foto).'" class="card-img-top" alt="..." style="object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title">9. Sınıf Etüt Hizmetleri</h5>
+                            <p class="card-text">'.$dokuz_card_aciklama.'</p>
+                        </div>
                     </div>
                 </div>
-            </div>';
-
-        // Hakkımızda kısmı
-        echo '<div class="container mt-5">
-                <h2 class="text-center mb-5">Hakkımızda</h2>
-                <div class="row">
-                    <div class="col-lg-4 mb-4">
-                        <div class="card">
-                            <img src="data:image/jpeg;base64,'.base64_encode($h_misyon_foto).'" class="card-img-top" alt="..." style="height: 200px; object-fit: cover;">
-                            <div class="card-body">
-                                <h5 class="card-title">Misyonumuz</h5>
-                                <p class="card-text">'.$h_misyon_aciklama.'</p>
-                            </div>
+                <!-- 10. Sınıf -->
+                <div class="col">
+                    <div class="card h-100">
+                        <img src="data:image/jpeg;base64,'.base64_encode($on_card_foto).'" class="card-img-top" alt="..." style="object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title">10. Sınıf Etüt Hizmetleri</h5>
+                            <p class="card-text">'.$on_card_aciklama.'</p>
                         </div>
                     </div>
-                    <div class="col-lg-4 mb-4">
-                        <div class="card">
-                            <img src="data:image/jpeg;base64,'.base64_encode($h_vizyon_foto).'" class="card-img-top" alt="..." style="height: 200px; object-fit: cover;">
-                            <div class="card-body">
-                                <h5 class="card-title">Vizyonumuz</h5>
-                                <p class="card-text">'.$h_vizyon_aciklama.'</p>
-                            </div>
+                </div>
+                <!-- 11. Sınıf -->
+                <div class="col">
+                    <div class="card h-100">
+                        <img src="data:image/jpeg;base64,'.base64_encode($onbir_card_foto).'" class="card-img-top" alt="..." style="object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title">11. Sınıf Etüt Hizmetleri</h5>
+                            <p class="card-text">'.$onbir_card_aciklama.'</p>
                         </div>
                     </div>
-                    <div class="col-lg-4 mb-4">
-                        <div class="card">
-                            <img src="data:image/jpeg;base64,'.base64_encode($h_hedef_foto).'" class="card-img-top" alt="..." style="height: 200px; object-fit: cover;">
-                            <div class="card-body">
-                                <h5 class="card-title">Hedefimiz</h5>
-                                <p class="card-text">'.$h_hedef_aciklama.'</p>
-                            </div>
+                </div>
+                <!-- 12. Sınıf -->
+                <div class="col">
+                    <div class="card h-100">
+                        <img src="data:image/jpeg;base64,'.base64_encode($oniki_card_foto).'" class="card-img-top" alt="..." style="object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title">12. Sınıf Etüt Hizmetleri</h5>
+                            <p class="card-text">'.$oniki_card_aciklama.'</p>
                         </div>
                     </div>
                 </div>
@@ -217,6 +214,11 @@ if (mysqli_num_rows($result) > 0) {
 }
 
 ?>
+
+<br><br><br>
+
+
+
     <!-- Footer -->
     <footer class="text-center text-lg-start bg-light text-muted">
         <div class="container p-4">
@@ -251,9 +253,9 @@ if (mysqli_num_rows($result) > 0) {
                     $query = "SELECT yetkiliNumara, yetkiliEmail FROM yetkili";
                     $result = mysqli_query($baglanti, $query);
 
-                    // Verileri alırken hata kontrolü yapın
+                   
                     if ($result) {
-                        // Veri varsa, HTML içine yerleştirme
+                        
                         $row = mysqli_fetch_assoc($result);
                         $telefon = $row['yetkiliNumara'];
                         $email = $row['yetkiliEmail'];
@@ -267,7 +269,7 @@ if (mysqli_num_rows($result) > 0) {
                     </li>
                     <?php
                     } else {
-                        // Veri yoksa veya hata oluştuysa bir hata mesajı gösterme
+                        
                         echo "İletişim bilgileri alınamadı.";
                     }
                     ?>
@@ -422,9 +424,6 @@ if (mysqli_num_rows($result) > 0) {
             </div>
         </div>
    </div>
-
-
-
 <!-- Öğretmen Şifremi Unuttum Modalı -->
 <div class="modal fade" id="ogretmenSifremiUnuttumModal" tabindex="-1" aria-labelledby="ogretmenSifremiUnuttumModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -434,7 +433,7 @@ if (mysqli_num_rows($result) > 0) {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" style="background-color: #f8f9fa;">
-              
+                
                         <?php
                         if(isset($_GET['error']) && $_GET['error'] == 'not_found') {
                             echo '<p class="text-danger text-center">Bu e-posta adresi veritabanında bulunamadı.</p>';
@@ -469,7 +468,7 @@ if (mysqli_num_rows($result) > 0) {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" style="background-color: #f8f9fa;">
-                
+               
                         <?php
                         if(isset($_GET['error']) && $_GET['error'] == 'not_found') {
                             echo '<p class="text-danger text-center">Bu e-posta adresi veritabanında bulunamadı.</p>';
@@ -483,7 +482,7 @@ if (mysqli_num_rows($result) > 0) {
                                 <button type="submit" class="btn btn-primary" style="padding: 10px 20px; font-size: 1rem; border-radius: 5px; transition: all 0.3s ease;">GÖNDER</button>
                             </div>
                         </form>
-                    
+                  
             </div>
         </div>
     </div>
@@ -505,7 +504,7 @@ if (mysqli_num_rows($result) > 0) {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" style="background-color: #f8f9fa;">
-               
+                
                         <?php
                         if(isset($_GET['error']) && $_GET['error'] == 'not_found') {
                             echo '<p class="text-danger text-center">Bu e-posta adresi veritabanında bulunamadı.</p>';
@@ -573,12 +572,8 @@ if (mysqli_num_rows($result) > 0) {
         }
     }
 </script>
-
 <?php
 // Veritabanı bağlantısını kapat
 mysqli_close($baglanti);
-?>
-
-
-</body>
+?></body>
 </html>
